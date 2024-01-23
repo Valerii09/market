@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <title>Device and Characteristics</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</head>
+<body>
+<header class="p-3 mb-3 border-bottom">
+    <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-between">
+
+            <!-- Выпадающее меню с категориями слева -->
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="categoryDropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                    Categories
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
+                    <li><a class="dropdown-item" href="#">All Categories</a></li>
+                    <li><a class="dropdown-item" href="#">Телевизоры</a></li>
+                    <li><a class="dropdown-item" href="#">Пылесосы</a></li>
+                    <li><a class="dropdown-item" href="#">Холодильники</a></li>
+                    <li><a class="dropdown-item" href="#">Смартфоны</a></li>
+                    <li><a class="dropdown-item" href="#">Компьютеры</a></li>
+                </ul>
+            </div>
+
+            <!-- Поиск и другие элементы справа -->
+            <div class="d-flex">
+                <form class="col-12 col-lg-auto me-lg-3" role="search">
+                    <input type="search" class="form-control" placeholder="Search..." aria-label="Search">
+                </form>
+
+                <div class="dropdown text-end">
+                    <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
+                    </a>
+                    <ul class="dropdown-menu text-small" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" href="#">New project...</a></li>
+                        <li><a class="dropdown-item" href="#">Settings</a></li>
+                        <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#">Sign out</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Добавленные строки для подключения JavaScript Bootstrap -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-pzjw8z+gfdLWp/RlNX5La5EZ6tP6fevc4HA8ebmGZcSa4wGgmi1Y53n5OWiNr7PM" crossorigin="anonymous"></script>
+
+<!-- Блок таблицы для отображения продуктов -->
+<div class="container mt-5">
+    <h2>All Products</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Serial Number</th>
+            <!-- Добавьте другие заголовки столбцов по вашему усмотрению -->
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Используйте Thymeleaf для вывода данных -->
+        <tr th:each="product : ${products}">
+            <td th:text="${product.name}"></td>
+            <td th:text="${product.serialNumber}"></td>
+            <!-- Добавьте другие ячейки данных по вашему усмотрению -->
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>
