@@ -11,53 +11,32 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne
+    @JoinColumn
+    private Category category;
+    @Column(name = "manufacturer_name")
+    private String manufacturerName;
+
+    @Column(name = "manufacturer_country")
+    private String manufacturerCountry;
+
+    @Column(name = "online_order_availability")
+    private Boolean onlineOrderAvailability;
+
+    @Column(name = "installment_option")
+    private Boolean installmentOption;
+
     @Column(name = "name")
     private String name;
 
-    @Column(name = "serial_number")
-    private String serialNumber;
+    @Column(name = "additional_data", columnDefinition = "json")
+    private String additionalData;
 
-    @Column(name = "color")
-    private String color;
+    @Column(name = "available_models ", columnDefinition = "json")
+    private String availableModels ;
 
-    @Column(name = "size")
-    private String size;
-
-    @Column(name = "price")
-    private Double price;
-
-    @Column(name = "availability")
-    private Boolean availability;
-
-    @ManyToOne
-    @JoinColumn(name = "category_id", nullable = false)
-    private Category category;
-
-    @Column(name = "technology")
-    private String technology;
-
-    @Column(name = "dust_bag_volume")
-    private String dustBagVolume;
-
-    @Column(name = "doors_count")
-    private Integer doorsCount;
-
-    @Column(name = "compressor_type")
-    private String compressorType;
-
-    @Column(name = "memory")
-    private String memory;
-
-    @Column(name = "cameras_count")
-    private Integer camerasCount;
-
-    @Column(name = "processor_type")
-    private String processorType;
     public String getName() {
         return name;
-    }
-    public String getSerialNumber() {
-        return serialNumber;
     }
     // Геттеры, сеттеры и другие методы
 }
