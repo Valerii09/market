@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -31,11 +32,21 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void updateProduct(Long id, Product updatedProduct) {
-        Product existingProduct = getProductById(id);
-        if (existingProduct != null) {
+        Optional<Product> optionalExistingProduct = productRepository.findById(id);
+
+        if (optionalExistingProduct.isPresent()) {
+            Product existingProduct = optionalExistingProduct.get();
+            // Обновляем существующий продукт данными из updatedProduct
+            existingProduct.setName(updatedProduct.getName());
+            existingProduct.setManufacturerCountry(updatedProduct.getManufacturerCountry());
+            existingProduct.setManufacturerName(updatedProduct.getManufacturerName());
+            // Другие поля, которые вы хотите обновить
+
+            // Сохраняем обновленный продукт
             productRepository.save(existingProduct);
         }
     }
+
 
 
     @Override

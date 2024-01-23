@@ -12,7 +12,7 @@ public class Product {
     private Long id;
 
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(name = "category_id")
     private Category category;
     @Column(name = "manufacturer_name")
     private String manufacturerName;
@@ -35,8 +35,67 @@ public class Product {
     @Column(name = "available_models ", columnDefinition = "json")
     private String availableModels ;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getManufacturerName() {
+        return manufacturerName;
+    }
+
+    public void setManufacturerName(String manufacturerName) {
+        this.manufacturerName = manufacturerName;
+    }
+
+    public String getManufacturerCountry() {
+        return manufacturerCountry;
+    }
+
+    public void setManufacturerCountry(String manufacturerCountry) {
+        this.manufacturerCountry = manufacturerCountry;
+    }
+
+    public Boolean getOnlineOrderAvailability() {
+        return onlineOrderAvailability;
+    }
+
+    public void setOnlineOrderAvailability(Boolean onlineOrderAvailability) {
+        this.onlineOrderAvailability = onlineOrderAvailability;
+    }
+
+    public Boolean getInstallmentOption() {
+        return installmentOption;
+    }
+
+    public void setInstallmentOption(Boolean installmentOption) {
+        this.installmentOption = installmentOption;
+    }
+
     public String getName() {
         return name;
     }
-    // Геттеры, сеттеры и другие методы
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getAdditionalData() {
+        return additionalData;
+    }
+
+    public void setAdditionalData(String additionalData) {
+        this.additionalData = additionalData;
+    }
+
+    public String getAvailableModels() {
+        return availableModels;
+    }
+
+    public void setAvailableModels(String availableModels) {
+        this.availableModels = availableModels;
+    }
 }

@@ -3,7 +3,7 @@ package com.example.market.model;
 
 import jakarta.persistence.*;
 
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "category")
@@ -17,7 +17,7 @@ public class Category {
     private String name;
 
     @OneToMany(mappedBy = "category")
-    private List<Product> products;
+    private Set<Product> products;
 
     // Геттеры, сеттеры и другие методы
 }

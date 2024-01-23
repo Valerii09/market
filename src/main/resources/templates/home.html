@@ -59,16 +59,15 @@
         <thead>
         <tr>
             <th>Name</th>
-            <th>Serial Number</th>
-            <!-- Добавьте другие заголовки столбцов по вашему усмотрению -->
+            <th>Manufacturer Country</th>
+            <th>Manufacturer Name</th>
         </tr>
         </thead>
         <tbody>
-        <!-- Используйте Thymeleaf для вывода данных -->
         <tr th:each="product : ${products}">
             <td th:text="${product.name}"></td>
-
-            <!-- Добавьте другие ячейки данных по вашему усмотрению -->
+            <td th:text="${product.manufacturerCountry}"></td>
+            <td th:text="${product.manufacturerName}"></td>
         </tr>
         </tbody>
     </table>
