@@ -2,6 +2,8 @@ package com.example.market.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 
 @Entity
 @Table(name = "product")
@@ -11,6 +13,16 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<AvailableModel> availableModels;
+    public List<AvailableModel> getAvailableModels() {
+        return availableModels;
+    }
+
+    public void setAvailableModels(List<AvailableModel> availableModels) {
+        this.availableModels = availableModels;
+    }
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
@@ -28,12 +40,6 @@ public class Product {
 
     @Column(name = "name")
     private String name;
-
-    @Column(name = "additional_data", columnDefinition = "json")
-    private String additionalData;
-
-    @Column(name = "available_models ", columnDefinition = "json")
-    private String availableModels ;
 
     public Long getId() {
         return id;
@@ -83,19 +89,5 @@ public class Product {
         this.name = name;
     }
 
-    public String getAdditionalData() {
-        return additionalData;
-    }
 
-    public void setAdditionalData(String additionalData) {
-        this.additionalData = additionalData;
-    }
-
-    public String getAvailableModels() {
-        return availableModels;
-    }
-
-    public void setAvailableModels(String availableModels) {
-        this.availableModels = availableModels;
-    }
 }
