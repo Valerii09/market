@@ -158,51 +158,54 @@
 
 <script>
     function saveProduct() {
-    // Получите значения полей формы
-   var categoryId = parseInt(document.getElementById('categorySelect').value, 10);
+        // Получите значения полей формы
+        var categoryId = parseInt(document.getElementById('categorySelect').value, 10);
+        var manufacturerName = document.getElementById('manufacturerName').value;
+        var manufacturerCountry = document.getElementById('manufacturerCountry').value;
+        var onlineOrderAvailability = document.getElementById('onlineOrderAvailability').checked;
+        var installmentOption = document.getElementById('installmentOption').checked;
+        var deviceName = document.getElementById('deviceName').value;
 
-    var manufacturerName = document.getElementById('manufacturerName').value;
-    var manufacturerCountry = document.getElementById('manufacturerCountry').value;
-    var onlineOrderAvailability = document.getElementById('onlineOrderAvailability').checked;
-    var installmentOption = document.getElementById('installmentOption').checked;
-    var deviceName = document.getElementById('deviceName').value;
+        // Проверка на пустоту полей
+        if (!manufacturerName || !manufacturerCountry || !deviceName) {
+            alert('Please fill in all required fields.'); // Вывести сообщение об ошибке
+            return;
+        }
 
-    console.log('categoryId:', categoryId);
-    console.log('manufacturerName:', manufacturerName);
-    console.log('manufacturerCountry:', manufacturerCountry);
-    console.log('onlineOrderAvailability:', onlineOrderAvailability);
-    console.log('installmentOption:', installmentOption);
-    console.log('deviceName:', deviceName);
+        var data = {
+            categoryId: categoryId,
+            manufacturerName: manufacturerName,
+            manufacturerCountry: manufacturerCountry,
+            onlineOrderAvailability: onlineOrderAvailability,
+            installmentOption: installmentOption,
+            name: deviceName
+        };
 
-    var data = {
-        categoryId: categoryId,
-        manufacturerName: manufacturerName,
-        manufacturerCountry: manufacturerCountry,
-        onlineOrderAvailability: onlineOrderAvailability,
-        installmentOption: installmentOption,
-        name: deviceName
-    };
+        var apiUrl = '/api/saveProduct';
 
-    console.log('Data to be sent:', data);
+        fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+        .then(response => {
+            if (response.ok) {
 
-    var apiUrl = '/api/saveProduct';
-
-    fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-    })
-    .then(response => response.text())
-    .then(content => {
-        console.log('Response content:', content);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
-
+                $('#addDeviceModal').modal('hide');
+            } else {
+                alert('Failed to add product. Please try again.');
+            }
+            return response.text();
+        })
+        .then(content => {
+            console.log('Response content:', content);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
 
 
 </script>
@@ -257,7 +260,7 @@
                         <input type="text" class="form-control" id="deviceName" name="name">
                     </div>
 
-                    <button type="button" class="btn btn-primary" onclick="saveProduct()">Сохранить</button>
+                    <button type="button" class="btn btn-primary" onclick="saveProduct()">Save</button>
 
 
                 </form>
