@@ -27,11 +27,11 @@
             filterProductsByCategory(categoryId);
         });
 
-        // Добавляем обработчик для "Все категории"
+        // Добавляем обработчик для "All categories"
         $('#allCategories').click(function (event) {
             event.preventDefault();
 
-            // Отображаем все категории
+            // Отображаем All categories
             filterProductsByCategory(-1);
         });
     });
@@ -93,12 +93,12 @@
                                 Categories
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#" data-category-id="-1" >Все категории</a>
-                                <a class="dropdown-item" href="#" data-category-id="1">Телевизоры</a>
-                                <a class="dropdown-item" href="#" data-category-id="2">Пылесосы</a>
-                                <a class="dropdown-item" href="#" data-category-id="3">Холодильники</a>
-                                <a class="dropdown-item" href="#" data-category-id="4">Смартфоны</a>
-                                <a class="dropdown-item" href="#" data-category-id="5">Компьютеры</a>
+                                <a class="dropdown-item" href="#" data-category-id="-1" >All categories</a>
+                                <a class="dropdown-item" href="#" data-category-id="1">TVs</a>
+                                <a class="dropdown-item" href="#" data-category-id="2">Vacuum cleaners</a>
+                                <a class="dropdown-item" href="#" data-category-id="3">Refrigerators</a>
+                                <a class="dropdown-item" href="#" data-category-id="4">Smartphones</a>
+                                <a class="dropdown-item" href="#" data-category-id="5">PC</a>
 
                             </div>
                         </li>
@@ -114,9 +114,66 @@
         </div>
     </div>
 </header>
+<script>
+    $(document).ready(function () {
+        // Обработчик события для каждой категории
+        $('.dropdown-item').click(function (event) {
+            event.preventDefault();
 
+            // Получение id категории из атрибута data-category-id
+            var categoryId = $(this).data('category-id');
+
+            // Изменение заголовка в зависимости от категории
+            changeCategoryTitle(categoryId);
+
+            // Фильтрация товаров по категории (ваш код)
+            filterProductsByCategory(categoryId);
+        });
+
+        // Добавляем обработчик для "All categories"
+        $('#allCategories').click(function (event) {
+            event.preventDefault();
+
+            // Получение id категории из атрибута data-category-id
+            var categoryId = $(this).data('category-id');
+
+            // Изменение заголовка в зависимости от категории
+            changeCategoryTitle(categoryId);
+
+            // Проверка на наличие categoryId
+            if (categoryId === undefined) {
+                // Если атрибут не определен, используем значение по умолчанию (например, -1)
+                categoryId = -1;
+            }
+
+            // Отображаем All categories
+            filterProductsByCategory(categoryId);
+        });
+
+        // Функция для изменения заголовка
+        function changeCategoryTitle(categoryId) {
+            var title = "All categories"; // Значение по умолчанию
+
+            // Условия для изменения заголовка в зависимости от categoryId
+            if (categoryId === 1) {
+                title = "TVs";
+            } else if (categoryId === 2) {
+                title = "Vacuum cleaners";
+            } else if (categoryId === 3) {
+                title = "Refrigerators";
+            } else if (categoryId === 4) {
+                title = "Smartphones";
+            } else if (categoryId === 5) {
+                title = "PC";
+            }
+
+            // Изменение содержимого заголовка
+            $('#categoryTitle').text(title);
+        }
+    });
+</script>
 <div class="container mt-5">
-    <h2>All Products</h2>
+    <h2 id="categoryTitle">All categories</h2>
     <table class="table">
         <thead>
         <tr>
@@ -225,11 +282,11 @@
                     <div class="mb-3">
                         <label for="categorySelect" class="form-label">Category</label>
                         <select class="form-select" id="categorySelect" name="categoryId">
-                            <option value="1">Телевизоры</option>
-                            <option value="2">Пылесосы</option>
-                            <option value="3">Холодильники</option>
-                            <option value="4">Смартфоны</option>
-                            <option value="5">Компьютеры</option>
+                            <option value="1">TVs</option>
+                            <option value="2">Vacuum cleaners</option>
+                            <option value="3">Refrigerators</option>
+                            <option value="4">Smartphones</option>
+                            <option value="5">PC</option>
                         </select>
                     </div>
 
