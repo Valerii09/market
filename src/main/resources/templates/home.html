@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Device and Characteristics</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 </head>
 <body>
 
@@ -16,7 +17,8 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav">
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                               data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Categories
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -35,14 +37,17 @@
                 </form>
 
                 <div class="dropdown text-end">
-                    <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" role="button"
+                       id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                         <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
                     </a>
                     <ul class="dropdown-menu text-small" aria-labelledby="userDropdown">
                         <li><a class="dropdown-item" href="#">New project...</a></li>
                         <li><a class="dropdown-item" href="#">Settings</a></li>
                         <li><a class="dropdown-item" href="#">Profile</a></li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                         <li><a class="dropdown-item" href="#">Sign out</a></li>
                     </ul>
                 </div>
@@ -59,6 +64,7 @@
             <th>Name</th>
             <th>Manufacturer Country</th>
             <th>Manufacturer Name</th>
+            <th>Available Models</th>
         </tr>
         </thead>
         <tbody>
@@ -67,20 +73,143 @@
             <td th:text="${product.manufacturerCountry}"></td>
             <td th:text="${product.manufacturerName}"></td>
             <td>
-                <!-- Добавлен цикл для вывода моделей для каждого продукта -->
-                <ul>
-                    <li th:each="model : ${product.availableModels}" th:text="${model.name}"></li>
-                </ul>
+                <!-- Вложенная таблица для моделей -->
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Model Name</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- Цикл для каждой доступной модели -->
+                    <tr th:each="model : ${product.availableModels}">
+                        <td th:text="${model.name}"></td>
+                    </tr>
+                    </tbody>
+                </table>
             </td>
-
-
         </tr>
         </tbody>
     </table>
+    <!-- Кнопка для открытия модального окна -->
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDeviceModal">Add Device</button>
+
+
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-pzjw8z+gfdLWp/RlNX5La5EZ6tP6fevc4HA8ebmGZcSa4wGgmi1Y53n5OWiNr7PM" crossorigin="anonymous"></script>
+<script>
+    function saveProduct() {
+    // Получите значения полей формы
+   var categoryId = parseInt(document.getElementById('categorySelect').value, 10);
+
+    var manufacturerName = document.getElementById('manufacturerName').value;
+    var manufacturerCountry = document.getElementById('manufacturerCountry').value;
+    var onlineOrderAvailability = document.getElementById('onlineOrderAvailability').checked;
+    var installmentOption = document.getElementById('installmentOption').checked;
+    var deviceName = document.getElementById('deviceName').value;
+
+    console.log('categoryId:', categoryId);
+    console.log('manufacturerName:', manufacturerName);
+    console.log('manufacturerCountry:', manufacturerCountry);
+    console.log('onlineOrderAvailability:', onlineOrderAvailability);
+    console.log('installmentOption:', installmentOption);
+    console.log('deviceName:', deviceName);
+
+    var data = {
+        categoryId: categoryId,
+        manufacturerName: manufacturerName,
+        manufacturerCountry: manufacturerCountry,
+        onlineOrderAvailability: onlineOrderAvailability,
+        installmentOption: installmentOption,
+        name: deviceName
+    };
+
+    console.log('Data to be sent:', data);
+
+    var apiUrl = '/api/saveProduct';
+
+    fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+    .then(response => response.text())
+    .then(content => {
+        console.log('Response content:', content);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+
+
+</script>
+
+<!-- Модальное окно для добавления устройства -->
+<div class="modal fade" id="addDeviceModal" tabindex="-1" aria-labelledby="addDeviceModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addDeviceModalLabel">Add Device</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Форма с параметрами -->
+                <form>
+                    <!-- Выбор категории -->
+                    <div class="mb-3">
+                        <label for="categorySelect" class="form-label">Category</label>
+                        <select class="form-select" id="categorySelect" name="categoryId">
+                            <option value="1">Телевизоры</option>
+                            <option value="2">Пылесосы</option>
+                            <option value="3">Холодильники</option>
+                            <option value="4">Смартфоны</option>
+                            <option value="5">Компьютеры</option>
+                        </select>
+                    </div>
+
+                    <!-- Остальные поля -->
+                    <div class="mb-3">
+                        <label for="manufacturerName" class="form-label">Manufacturer Name</label>
+                        <input type="text" class="form-control" id="manufacturerName" name="manufacturerName">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="manufacturerCountry" class="form-label">Manufacturer Country</label>
+                        <input type="text" class="form-control" id="manufacturerCountry" name="manufacturerCountry">
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="onlineOrderAvailability"
+                               name="onlineOrderAvailability">
+                        <label class="form-check-label" for="onlineOrderAvailability">Online Order Availability</label>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="installmentOption" name="installmentOption">
+                        <label class="form-check-label" for="installmentOption">Installment Option</label>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="deviceName" class="form-label">Device Name</label>
+                        <input type="text" class="form-control" id="deviceName" name="name">
+                    </div>
+
+                    <button type="button" class="btn btn-primary" onclick="saveProduct()">Сохранить</button>
+
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
 
 </body>
 </html>
+

@@ -2,7 +2,7 @@ package com.example.market.impl;
 
 import com.example.market.model.Product;
 import com.example.market.repository.ProductRepository;
-import com.example.market.service.ProductService;
+import com.example.market.service.ProductServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ProductServiceImpl implements ProductService {
+public class ProductServiceImpl implements ProductServiceInterface {
 
     @Autowired
     private ProductRepository productRepository;

@@ -25,7 +25,7 @@ public class Product {
     }
     @ManyToOne
     @JoinColumn(name = "category_id")
-    private Category category;
+    private Category categoryId;
     @Column(name = "manufacturer_name")
     private String manufacturerName;
 
@@ -38,7 +38,7 @@ public class Product {
     @Column(name = "installment_option")
     private Boolean installmentOption;
 
-    @Column(name = "name")
+    @Column(name = "name", unique = false)
     private String name;
 
     public Long getId() {
@@ -89,5 +89,12 @@ public class Product {
         this.name = name;
     }
 
+    public Category getCategory() {
+        return categoryId;
+    }
+
+    public void setCategory(Category category) {
+        this.categoryId = category;
+    }
 
 }

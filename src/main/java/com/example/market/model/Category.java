@@ -16,7 +16,7 @@ public class Category {
     @Column(name = "name")
     private String name;
 
-    @OneToMany(mappedBy = "category")
+    @OneToMany(mappedBy = "categoryId")
     private Set<Product> products;
 
     // Геттеры, сеттеры и другие методы
