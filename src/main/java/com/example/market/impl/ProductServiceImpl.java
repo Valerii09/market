@@ -47,10 +47,14 @@ public class ProductServiceImpl implements ProductServiceInterface {
         }
     }
 
-
-
     @Override
     public void deleteProduct(Long id) {
         productRepository.deleteById(id);
     }
+
+    public List<Product> getProductsByCategoryId(Long categoryId) {
+        // Реализуйте метод для получения продуктов по идентификатору категории
+        return productRepository.findByCategoryId(categoryId);
+    }
 }
+

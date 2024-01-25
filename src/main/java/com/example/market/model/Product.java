@@ -1,5 +1,6 @@
 package com.example.market.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
@@ -16,6 +17,7 @@ public class Product {
 
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<AvailableModel> availableModels;
     public List<AvailableModel> getAvailableModels() {
         return availableModels;
@@ -26,7 +28,7 @@ public class Product {
     }
 
     @JoinColumn(name = "category_id")
-    private Long categoryId;
+    public Long categoryId;
     @Column(name = "manufacturer_name")
     private String manufacturerName;
 

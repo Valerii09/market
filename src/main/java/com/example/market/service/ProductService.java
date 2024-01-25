@@ -5,6 +5,8 @@ import com.example.market.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ProductService {
 
@@ -18,5 +20,15 @@ public class ProductService {
     public void saveProduct(Product product) {
         // Можно добавить логику валидации данных перед сохранением, если необходимо
         productRepository.save(product);
+    }
+
+    public List<Product> getProductsByCategoryId(Long categoryId) {
+        // Реализуйте метод для получения продуктов по категории
+        return productRepository.findByCategoryId(categoryId);
+    }
+
+    public List<Product> getAllProducts() {
+        // Реализуйте метод для получения всех продуктов
+        return productRepository.findAll();
     }
 }

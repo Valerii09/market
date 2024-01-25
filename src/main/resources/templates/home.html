@@ -8,6 +8,70 @@
           integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 </head>
 <body>
+<!-- Подключение библиотеки jQuery (если ещё не подключена) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // Обработчик события для каждой категории
+        $('.dropdown-item').click(function (event) {
+
+            event.preventDefault();
+
+            // Получение id категории из атрибута data-category-id
+            var categoryId = $(this).data('category-id');
+
+            // Фильтрация товаров по категории (ваш код)
+            filterProductsByCategory(categoryId);
+        });
+    });
+
+function filterProductsByCategory(categoryId) {
+    $.ajax({
+        url: '/filterProducts?categoryId=' + categoryId,
+        type: 'GET',
+
+success: function (data) {
+    // Очищаем текущий HTML-контент таблицы
+    $('tbody').empty();
+
+    // Перебираем полученные данные и обновляем HTML-контент таблицы
+    for (var i = 0; i < data.length; i++) {
+        var product = data[i];
+        var row = '<tr>';
+        row += '<td>' + product.name + '</td>';
+        row += '<td>' + product.manufacturerCountry + '</td>';
+        row += '<td>' + product.manufacturerName + '</td>';
+        row += '<td>';
+
+        // Добавляем модели в одну ячейку
+        if (product.availableModels.length > 0) {
+            row += '<ul>';
+            for (var j = 0; j < product.availableModels.length; j++) {
+                row += '<li>' + product.availableModels[j].name + '</li>';
+            }
+            row += '</ul>';
+        } else {
+            row += 'No models available';
+        }
+
+        row += '</td></tr>';
+
+        // Добавляем строку в таблицу
+        $('tbody').append(row);
+    }
+},
+
+
+        error: function (xhr, status, error) {
+            // Обработка ошибки
+            console.error('Error while filtering products:', status, error);
+        }
+    });
+}
+
+
+</script>
 
 <header class="p-3 mb-3 border-bottom">
     <div class="container">
@@ -22,9 +86,12 @@
                                 Categories
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#">Категория 1</a>
-                                <a class="dropdown-item" href="#">Категория 2</a>
-                                <a class="dropdown-item" href="#">Категория 3</a>
+                                <a class="dropdown-item" href="#" data-category-id="1">Телевизоры</a>
+                                <a class="dropdown-item" href="#" data-category-id="2">Пылесосы</a>
+                                <a class="dropdown-item" href="#" data-category-id="3">Холодильники</a>
+                                <a class="dropdown-item" href="#" data-category-id="4">Смартфоны</a>
+                                <a class="dropdown-item" href="#" data-category-id="5">Компьютеры</a>
+
                             </div>
                         </li>
                     </ul>
@@ -35,22 +102,6 @@
                 <form class="col-12 col-lg-auto me-lg-3" role="search">
                     <input type="search" class="form-control" placeholder="Search..." aria-label="Search">
                 </form>
-
-                <div class="dropdown text-end">
-                    <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" role="button"
-                       id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
-                    </a>
-                    <ul class="dropdown-menu text-small" aria-labelledby="userDropdown">
-                        <li><a class="dropdown-item" href="#">New project...</a></li>
-                        <li><a class="dropdown-item" href="#">Settings</a></li>
-                        <li><a class="dropdown-item" href="#">Profile</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="#">Sign out</a></li>
-                    </ul>
-                </div>
             </div>
         </div>
     </div>
@@ -68,7 +119,8 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="product : ${products}">
+        <!-- Цикл для каждого продукта -->
+        <tr th:each="product : ${products}" th:if="${product.categoryId == selectedCategoryId}">
             <td th:text="${product.name}"></td>
             <td th:text="${product.manufacturerCountry}"></td>
             <td th:text="${product.manufacturerName}"></td>
@@ -93,9 +145,8 @@
     </table>
     <!-- Кнопка для открытия модального окна -->
     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDeviceModal">Add Device</button>
-
-
 </div>
+
 
 <script>
     function saveProduct() {

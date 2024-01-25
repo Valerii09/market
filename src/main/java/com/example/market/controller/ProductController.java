@@ -4,14 +4,13 @@ import com.example.market.model.AvailableModel;
 import com.example.market.model.Product;
 import com.example.market.repository.ProductRepository;
 import com.example.market.service.AvailableModelService;
+import com.example.market.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,12 +20,26 @@ public class ProductController {
     @Autowired
     private ProductRepository productRepository;
 
+    private final ProductService productService;
+    @Autowired
+    public ProductController(ProductService productService) {
+        this.productService = productService;
+    }
+
     @Autowired
     private AvailableModelService availableModelService;
 
     @GetMapping("/home")
-    public String getAllProducts(Model model) {
-        List<Product> productList = productRepository.findAll();
+    public String getAllProducts(@RequestParam(required = false) Long categoryId, Model model) {
+        List<Product> productList;
+
+        if (categoryId != null) {
+            // Если categoryId задан, загрузить только продукты для выбранной категории
+            productList = productRepository.findByCategoryId(categoryId);
+        } else {
+            // В противном случае загрузить все продукты
+            productList = productRepository.findAll();
+        }
 
         for (Product product : productList) {
             List<AvailableModel> availableModels = availableModelService.getAvailableModelsByProductId(product.getId());
@@ -35,7 +48,7 @@ public class ProductController {
 
         System.out.println("Number of products: " + productList.size());
         model.addAttribute("products", productList);
-        return "home"; // Без слэша в начале
+        return "home";
     }
 
     @PostMapping("/api/saveProduct")
@@ -58,7 +71,19 @@ public class ProductController {
         return ResponseEntity.ok("{\"productId\":" + product.getId() + ", \"categoryId\":" + product.getCategory() + "}");
     }
 
-
-
-
+    @GetMapping("/filterProducts")
+    @ResponseBody
+    public ResponseEntity<List<Product>> filterProductsByCategory(@RequestParam Long categoryId) {
+        try {
+            List<Product> products = productService.getProductsByCategoryId(categoryId);
+            return ResponseEntity.ok(products);
+        } catch (Exception e) {
+            // Обработка ошибок, если необходимо
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }
+
+
+
