@@ -73,9 +73,16 @@ public class ProductController {
 
     @GetMapping("/filterProducts")
     @ResponseBody
-    public ResponseEntity<List<Product>> filterProductsByCategory(@RequestParam Long categoryId) {
+    public ResponseEntity<List<Product>> filterProductsByCategory(@RequestParam(required = false) Long categoryId) {
         try {
-            List<Product> products = productService.getProductsByCategoryId(categoryId);
+            List<Product> products;
+            if (categoryId != null && categoryId != -1) {
+                // Если categoryId задан и не равен -1, фильтруем по категории
+                products = productService.getProductsByCategoryId(categoryId);
+            } else {
+                // Если categoryId не задан или равен -1, получаем все продукты
+                products = productService.getAllProducts();
+            }
             return ResponseEntity.ok(products);
         } catch (Exception e) {
             // Обработка ошибок, если необходимо
@@ -83,6 +90,7 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
 }
 
 
