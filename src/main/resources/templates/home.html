@@ -13,6 +13,9 @@
 
 <script>
     $(document).ready(function () {
+        // Загружаем все продукты при открытии страницы
+        filterProductsByCategory(-1);
+
         // Обработчик события для каждой категории
         $('.dropdown-item').click(function (event) {
             event.preventDefault();
@@ -33,46 +36,46 @@
         });
     });
 
-    function filterProductsByCategory(categoryId) {
-        $.ajax({
-            url: '/filterProducts?categoryId=' + categoryId,
-            type: 'GET',
-            success: function (data) {
-                // Очищаем текущий HTML-контент таблицы
-                $('tbody').empty();
+        function filterProductsByCategory(categoryId) {
+            $.ajax({
+                url: '/filterProducts?categoryId=' + categoryId,
+                type: 'GET',
+                success: function (data) {
+                    // Очищаем текущий HTML-контент таблицы
+                    $('tbody').empty();
 
-                // Перебираем полученные данные и обновляем HTML-контент таблицы
-                for (var i = 0; i < data.length; i++) {
-                    var product = data[i];
-                    var row = '<tr>';
-                    row += '<td>' + product.name + '</td>';
-                    row += '<td>' + product.manufacturerCountry + '</td>';
-                    row += '<td>' + product.manufacturerName + '</td>';
-                    row += '<td>';
+                    // Перебираем полученные данные и обновляем HTML-контент таблицы
+                    for (var i = 0; i < data.length; i++) {
+                        var product = data[i];
+                        var row = '<tr>';
+                        row += '<td>' + product.name + '</td>';
+                        row += '<td>' + product.manufacturerCountry + '</td>';
+                        row += '<td>' + product.manufacturerName + '</td>';
+                        row += '<td>';
 
-                    // Добавляем модели в одну ячейку
-                    if (product.availableModels.length > 0) {
-                        row += '<ul>';
-                        for (var j = 0; j < product.availableModels.length; j++) {
-                            row += '<li>' + product.availableModels[j].name + '</li>';
+                        // Добавляем модели в одну ячейку
+                        if (product.availableModels.length > 0) {
+                            row += '<ul>';
+                            for (var j = 0; j < product.availableModels.length; j++) {
+                                row += '<li>' + product.availableModels[j].name + '</li>';
+                            }
+                            row += '</ul>';
+                        } else {
+                            row += 'No models available';
                         }
-                        row += '</ul>';
-                    } else {
-                        row += 'No models available';
+
+                        row += '</td></tr>';
+
+                        // Добавляем строку в таблицу
+                        $('tbody').append(row);
                     }
-
-                    row += '</td></tr>';
-
-                    // Добавляем строку в таблицу
-                    $('tbody').append(row);
+                },
+                error: function (xhr, status, error) {
+                    // Обработка ошибки
+                    console.error('Error while filtering products:', status, error);
                 }
-            },
-            error: function (xhr, status, error) {
-                // Обработка ошибки
-                console.error('Error while filtering products:', status, error);
-            }
-        });
-    }
+            });
+        }
 </script>
 
 
