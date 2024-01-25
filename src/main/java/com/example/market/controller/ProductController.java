@@ -40,9 +40,9 @@ public class ProductController {
 
     @PostMapping("/api/saveProduct")
     @ResponseBody
-
     public ResponseEntity<String> saveProduct(@RequestBody Product product) {
         System.out.println("Received product data: " + product);
+
         // Пример сохранения продукта в репозитории
         productRepository.save(product);
 
@@ -54,9 +54,11 @@ public class ProductController {
             }
         }
 
-        // Возвращаем JSON-ответ, например, с идентификатором сохраненного продукта
-        return ResponseEntity.ok("{\"categoryId\":" + product.getCategory() + "}");
+        // Возвращаем JSON-ответ с идентификатором сохраненного продукта и идентификатором категории
+        return ResponseEntity.ok("{\"productId\":" + product.getId() + ", \"categoryId\":" + product.getCategory() + "}");
     }
+
+
 
 
 }

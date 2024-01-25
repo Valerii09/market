@@ -1,5 +1,6 @@
 package com.example.market.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -23,9 +24,9 @@ public class Product {
     public void setAvailableModels(List<AvailableModel> availableModels) {
         this.availableModels = availableModels;
     }
-    @ManyToOne
+
     @JoinColumn(name = "category_id")
-    private Category categoryId;
+    private Long categoryId;
     @Column(name = "manufacturer_name")
     private String manufacturerName;
 
@@ -88,12 +89,12 @@ public class Product {
     public void setName(String name) {
         this.name = name;
     }
-
-    public Category getCategory() {
+    @JsonProperty("categoryId")
+    public Long getCategory() {
         return categoryId;
     }
-
-    public void setCategory(Category category) {
+    @JsonProperty("categoryId")
+    public void setCategory(Long category) {
         this.categoryId = category;
     }
 
