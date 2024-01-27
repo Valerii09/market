@@ -156,6 +156,9 @@
 
             // Очищаем строку поиска
             $('#searchQuery').val('');
+            // Обновляем заголовок
+             var categoryTitle = $(this).text();
+            $('#categoryTitle').text(categoryTitle);
         });
 
         // Добавляем обработчик для "All categories"
