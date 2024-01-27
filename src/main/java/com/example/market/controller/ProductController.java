@@ -91,6 +91,44 @@ public class ProductController {
         }
     }
 
+
+    @GetMapping("/filterProductsByName")
+    @ResponseBody
+    public ResponseEntity<List<Product>> filterProductsByName(
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) String searchQuery
+    ) {
+        try {
+            List<Product> products;
+
+            if (categoryId != null && categoryId != -1) {
+                // Если categoryId задан и не равен -1, ищем по категории
+                if (searchQuery != null && !searchQuery.isEmpty()) {
+                    // Если есть поисковый запрос, ищем и по имени
+                    products = productService.searchProductsByCategoryIdAndName(categoryId, searchQuery);
+                } else {
+                    // Иначе получаем все продукты по категории
+                    products = productService.getProductsByCategoryId(categoryId);
+                }
+            } else {
+                // Если categoryId не задан или равен -1, получаем все продукты
+                if (searchQuery != null && !searchQuery.isEmpty()) {
+                    // Если есть только поисковый запрос, ищем по имени
+                    products = productService.searchProductsByName(searchQuery);
+                } else {
+                    // Иначе получаем все продукты
+                    products = productService.getAllProducts();
+                }
+            }
+
+            return ResponseEntity.ok(products);
+        } catch (Exception e) {
+            // Обработка ошибок, если необходимо
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 }
 
 

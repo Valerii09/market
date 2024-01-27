@@ -18,17 +18,32 @@ public class ProductService {
     }
 
     public void saveProduct(Product product) {
-        // Можно добавить логику валидации данных перед сохранением, если необходимо
+
         productRepository.save(product);
     }
 
     public List<Product> getProductsByCategoryId(Long categoryId) {
-        // Реализуйте метод для получения продуктов по категории
+
         return productRepository.findByCategoryId(categoryId);
     }
 
     public List<Product> getAllProducts() {
-        // Реализуйте метод для получения всех продуктов
+
         return productRepository.findAll();
     }
+
+    public List<Product> searchProductsByCategoryAndName(Long categoryId, String searchQuery) {
+        return productRepository.findByCategoryIdAndNameContaining(categoryId, searchQuery);
+    }
+
+    public List<Product> searchProductsByName(String searchQuery) {
+        // Реализуйте метод для поиска продуктов по имени
+        return productRepository.findByNameContaining(searchQuery);
+    }
+    public List<Product> searchProductsByCategoryIdAndName(Long categoryId, String searchQuery) {
+        // Реализуйте метод для поиска продуктов по идентификатору категории и имени
+        return productRepository.findByCategoryIdAndNameContaining(categoryId, searchQuery);
+    }
+
+
 }

@@ -14,70 +14,89 @@
 <script>
     $(document).ready(function () {
         // Загружаем все продукты при открытии страницы
-        filterProductsByCategory(-1);
+        filterProducts(-1, '');
+
+        // Переменная для хранения текущей выбранной категории
+        var currentCategoryId = -1;
 
         // Обработчик события для каждой категории
         $('.dropdown-item').click(function (event) {
             event.preventDefault();
-
-            // Получение id категории из атрибута data-category-id
             var categoryId = $(this).data('category-id');
-
-            // Фильтрация товаров по категории
-            filterProductsByCategory(categoryId);
+            currentCategoryId = categoryId; // Сохраняем текущую категорию
+            filterProducts(categoryId, '');
         });
 
         // Добавляем обработчик для "All categories"
         $('#allCategories').click(function (event) {
             event.preventDefault();
+            currentCategoryId = -1; // Сбрасываем текущую категорию
+            filterProducts(-1, '');
+        });
 
-            // Отображаем All categories
-            filterProductsByCategory(-1);
+        // Обработчик ввода в поле поиска
+        $('#searchQuery').on('input', function () {
+            var searchQuery = $(this).val();
+            filterProducts(currentCategoryId, searchQuery);
+        });
+
+        // Добавляем обработчик для кнопки поиска (если у вас есть такая кнопка)
+        $('#searchButton').click(function (event) {
+            event.preventDefault();
+            searchProducts();
         });
     });
 
-        function filterProductsByCategory(categoryId) {
-            $.ajax({
-                url: '/filterProducts?categoryId=' + categoryId,
-                type: 'GET',
-                success: function (data) {
-                    // Очищаем текущий HTML-контент таблицы
-                    $('tbody').empty();
+    function filterProducts(categoryId, searchQuery) {
+        $.ajax({
+            url: '/filterProductsByName',
+            type: 'GET',
+            data: {
+                categoryId: categoryId,
+                searchQuery: searchQuery
+            },
+            success: function (data) {
+                // Очищаем текущий HTML-контент таблицы
+                $('tbody').empty();
 
-                    // Перебираем полученные данные и обновляем HTML-контент таблицы
-                    for (var i = 0; i < data.length; i++) {
-                        var product = data[i];
-                        var row = '<tr>';
-                        row += '<td>' + product.name + '</td>';
-                        row += '<td>' + product.manufacturerCountry + '</td>';
-                        row += '<td>' + product.manufacturerName + '</td>';
-                        row += '<td>';
+                // Перебираем полученные данные и обновляем HTML-контент таблицы
+                for (var i = 0; i < data.length; i++) {
+                    var product = data[i];
+                    var row = '<tr>';
+                    row += '<td>' + product.name + '</td>';
+                    row += '<td>' + product.manufacturerCountry + '</td>';
+                    row += '<td>' + product.manufacturerName + '</td>';
+                    row += '<td>';
 
-                        // Добавляем модели в одну ячейку
-                        if (product.availableModels.length > 0) {
-                            row += '<ul>';
-                            for (var j = 0; j < product.availableModels.length; j++) {
-                                row += '<li>' + product.availableModels[j].name + '</li>';
-                            }
-                            row += '</ul>';
-                        } else {
-                            row += 'No models available';
+                    // Добавляем модели в одну ячейку
+                    if (product.availableModels.length > 0) {
+                        row += '<ul>';
+                        for (var j = 0; j < product.availableModels.length; j++) {
+                            row += '<li>' + product.availableModels[j].name + '</li>';
                         }
-
-                        row += '</td></tr>';
-
-                        // Добавляем строку в таблицу
-                        $('tbody').append(row);
+                        row += '</ul>';
+                    } else {
+                        row += 'No models available';
                     }
-                },
-                error: function (xhr, status, error) {
-                    // Обработка ошибки
-                    console.error('Error while filtering products:', status, error);
-                }
-            });
-        }
-</script>
 
+                    row += '</td></tr>';
+
+                    // Добавляем строку в таблицу
+                    $('tbody').append(row);
+                }
+            },
+            error: function (xhr, status, error) {
+                // Обработка ошибки
+                console.error('Error while filtering products:', status, error);
+            }
+        });
+    }
+
+    function searchProducts() {
+        var searchQuery = $('#searchQuery').val();
+        filterProducts(currentCategoryId, searchQuery);
+    }
+</script>
 
 
 <header class="p-3 mb-3 border-bottom">
@@ -93,7 +112,7 @@
                                 Categories
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#" data-category-id="-1" >All categories</a>
+                                <a class="dropdown-item" href="#" data-category-id="-1">All categories</a>
                                 <a class="dropdown-item" href="#" data-category-id="1">TVs</a>
                                 <a class="dropdown-item" href="#" data-category-id="2">Vacuum cleaners</a>
                                 <a class="dropdown-item" href="#" data-category-id="3">Refrigerators</a>
@@ -106,72 +125,113 @@
                 </div>
             </nav>
 
+            <script>
+            </script>
+
             <div class="d-flex">
-                <form class="col-12 col-lg-auto me-lg-3" role="search">
-                    <input type="search" class="form-control" placeholder="Search..." aria-label="Search">
+                <form class="col-12 col-lg-auto me-lg-3" role="search" onsubmit="searchProducts(); return false;">
+                    <input type="search" class="form-control" id="searchQuery" placeholder="Search..."
+                           aria-label="Search">
                 </form>
+
+
             </div>
         </div>
     </div>
 </header>
 <script>
     $(document).ready(function () {
+        // Загружаем все продукты при открытии страницы
+        filterProducts(-1, '');
+
+        // Переменная для хранения текущей выбранной категории
+        var currentCategoryId = -1;
+
         // Обработчик события для каждой категории
         $('.dropdown-item').click(function (event) {
             event.preventDefault();
-
-            // Получение id категории из атрибута data-category-id
             var categoryId = $(this).data('category-id');
+            currentCategoryId = categoryId; // Сохраняем текущую категорию
+            filterProducts(categoryId, '');
 
-            // Изменение заголовка в зависимости от категории
-            changeCategoryTitle(categoryId);
-
-            // Фильтрация товаров по категории (ваш код)
-            filterProductsByCategory(categoryId);
+            // Очищаем строку поиска
+            $('#searchQuery').val('');
         });
 
         // Добавляем обработчик для "All categories"
         $('#allCategories').click(function (event) {
             event.preventDefault();
+            currentCategoryId = -1; // Сбрасываем текущую категорию
+            filterProducts(-1, '');
 
-            // Получение id категории из атрибута data-category-id
-            var categoryId = $(this).data('category-id');
-
-            // Изменение заголовка в зависимости от категории
-            changeCategoryTitle(categoryId);
-
-            // Проверка на наличие categoryId
-            if (categoryId === undefined) {
-                // Если атрибут не определен, используем значение по умолчанию (например, -1)
-                categoryId = -1;
-            }
-
-            // Отображаем All categories
-            filterProductsByCategory(categoryId);
+            // Очищаем строку поиска
+            $('#searchQuery').val('');
         });
 
-        // Функция для изменения заголовка
-        function changeCategoryTitle(categoryId) {
-            var title = "All categories"; // Значение по умолчанию
+        // Обработчик ввода в поле поиска
+        $('#searchQuery').on('input', function () {
+            var searchQuery = $(this).val();
+            filterProducts(currentCategoryId, searchQuery);
+        });
 
-            // Условия для изменения заголовка в зависимости от categoryId
-            if (categoryId === 1) {
-                title = "TVs";
-            } else if (categoryId === 2) {
-                title = "Vacuum cleaners";
-            } else if (categoryId === 3) {
-                title = "Refrigerators";
-            } else if (categoryId === 4) {
-                title = "Smartphones";
-            } else if (categoryId === 5) {
-                title = "PC";
-            }
-
-            // Изменение содержимого заголовка
-            $('#categoryTitle').text(title);
-        }
+        // Добавляем обработчик для кнопки поиска (если у вас есть такая кнопка)
+        $('#searchButton').click(function (event) {
+            event.preventDefault();
+            searchProducts();
+        });
     });
+
+    function filterProducts(categoryId, searchQuery) {
+        $.ajax({
+            url: '/filterProductsByName',
+            type: 'GET',
+            data: {
+                categoryId: categoryId,
+                searchQuery: searchQuery
+            },
+            success: function (data) {
+                // Очищаем текущий HTML-контент таблицы
+                $('tbody').empty();
+
+                // Перебираем полученные данные и обновляем HTML-контент таблицы
+                for (var i = 0; i < data.length; i++) {
+                    var product = data[i];
+                    var row = '<tr>';
+                    row += '<td>' + product.name + '</td>';
+                    row += '<td>' + product.manufacturerCountry + '</td>';
+                    row += '<td>' + product.manufacturerName + '</td>';
+                    row += '<td>';
+
+                    // Добавляем модели в одну ячейку
+                    if (product.availableModels.length > 0) {
+                        row += '<ul>';
+                        for (var j = 0; j < product.availableModels.length; j++) {
+                            row += '<li>' + product.availableModels[j].name + '</li>';
+                        }
+                        row += '</ul>';
+                    } else {
+                        row += 'No models available';
+                    }
+
+                    row += '</td></tr>';
+
+                    // Добавляем строку в таблицу
+                    $('tbody').append(row);
+                }
+            },
+            error: function (xhr, status, error) {
+                // Обработка ошибки
+                console.error('Error while filtering products:', status, error);
+            }
+        });
+    }
+
+    function searchProducts() {
+        var searchQuery = $('#searchQuery').val();
+        filterProducts(currentCategoryId, searchQuery);
+    }
 </script>
+
 <div class="container mt-5">
     <h2 id="categoryTitle">All categories</h2>
     <table class="table">
