@@ -60,11 +60,6 @@
             deleteProduct(productId);
         });
 
-        // Добавляем обработчик для кнопки редактирования
-        $('body').on('click', '.edit-btn', function () {
-            var productId = $(this).data('product-id');
-            // Реализуйте логику редактирования, например, открыв модальное окно с формой редактирования
-        });
 
         // Загружаем все продукты при открытии страницы
         filterProducts(-1, '');
@@ -110,53 +105,135 @@
     });
 
     function filterProducts(categoryId, searchQuery) {
-        $.ajax({
-            url: '/filterProductsByName',
-            type: 'GET',
-            data: {
-                categoryId: categoryId,
-                searchQuery: searchQuery
-            },
-            success: function (data) {
-                // Очищаем текущий HTML-контент таблицы
-                $('tbody').empty();
+    $.ajax({
+        url: '/filterProductsByName',
+        type: 'GET',
+        data: {
+            categoryId: categoryId,
+            searchQuery: searchQuery
+        },
+        success: function (data) {
+            // Очищаем текущий HTML-контент таблицы
+            $('tbody').empty();
 
-                // Перебираем полученные данные и обновляем HTML-контент таблицы
-                for (var i = 0; i < data.length; i++) {
-                    var product = data[i];
-                    var row = '<tr>';
-                     row += '<td>';
-            row += '<button class="btn btn-danger delete-btn" data-product-id="' + product.id + '">Delete</button>';
-            row += '<button class="btn btn-primary edit-btn" data-product-id="' + product.id + '">Edit</button>';
-            row += '</td>';
-                    row += '<td>' + product.name + '</td>';
-                    row += '<td>' + product.manufacturerCountry + '</td>';
-                    row += '<td>' + product.manufacturerName + '</td>';
-                    row += '<td>';
+            // Перебираем полученные данные и обновляем HTML-контент таблицы
+            for (var i = 0; i < data.length; i++) {
+                var product = data[i];
+                var row = '<tr>';
+                row += '<td>';
+                row += '<button class="btn btn-danger delete-btn" data-product-id="' + product.id + '">Delete</button>';
 
-                    // Добавляем модели в одну ячейку
-                    if (product.availableModels.length > 0) {
-                        row += '<ul>';
-                        for (var j = 0; j < product.availableModels.length; j++) {
-                            row += '<li>' + product.availableModels[j].name + '</li>';
-                        }
-                        row += '</ul>';
-                    } else {
-                        row += 'No models available';
+                // Добавляем атрибут data-product для кнопки "Edit" с данными продукта
+                row += '<button class="btn btn-primary edit-btn" data-toggle="modal" data-target="#editProductModal" data-product-id="' + product.id + '" data-product=\'{"id":' + product.id + ',"categoryId":' + product.categoryId + ',"manufacturerName":"' + product.manufacturerName + '","manufacturerCountry":"' + product.manufacturerCountry + '","onlineOrderAvailability":' + product.onlineOrderAvailability + ',"installmentOption":' + product.installmentOption + ',"name":"' + product.name + '"}\' >Edit</button>';
+                row += '</td>';
+                row += '<td>' + product.name + '</td>';
+                row += '<td>' + product.manufacturerCountry + '</td>';
+                row += '<td>' + product.manufacturerName + '</td>';
+                row += '<td>';
+
+                // Добавляем модели в одну ячейку
+                if (product.availableModels.length > 0) {
+                    row += '<ul>';
+                    for (var j = 0; j < product.availableModels.length; j++) {
+                        row += '<li>' + product.availableModels[j].name + '</li>';
                     }
-
-                    row += '</td></tr>';
-
-                    // Добавляем строку в таблицу
-                    $('tbody').append(row);
+                    row += '</ul>';
+                } else {
+                    row += 'No models available';
                 }
-            },
-            error: function (xhr, status, error) {
-                // Обработка ошибки
-                console.error('Error while filtering products:', status, error);
+
+                row += '</td></tr>';
+
+                // Добавляем строку в таблицу
+                $('tbody').append(row);
             }
-        });
-    }
+
+            // Добавляем обработчик события для каждой кнопки "Edit"
+            $('.edit-btn').click(function () {
+                // Получаем данные продукта из атрибута data-product
+                var productData = $(this).data('product');
+                $('#hiddenProductId').val(productData.id);
+                // Заполняем поля формы значениями из переменной productData
+                $('#editCategorySelect').val(productData.categoryId);
+                $('#editManufacturerName').val(productData.manufacturerName);
+                $('#editManufacturerCountry').val(productData.manufacturerCountry);
+                $('#editOnlineOrderAvailability').prop('checked', productData.onlineOrderAvailability);
+                $('#editInstallmentOption').prop('checked', productData.installmentOption);
+                $('#editDeviceName').val(productData.name);
+                // Открываем модальное окно редактирования
+                var productId = $(this).data('product-id');
+                $('#editProductModal').modal('show');
+
+
+            });
+        },
+        error: function (xhr, status, error) {
+            // Обработка ошибки
+            console.error('Error while filtering products:', status, error);
+        }
+    });
+}
+// Убираем аргумент из функции EditedProduct
+function EditedProduct() {
+    // Считываем productId из скрытого поля
+    var productId = $('#hiddenProductId').val();
+
+    console.log('Received productId:', productId);
+
+    // Получаем значения полей формы аналогично saveProduct
+    var categoryId = parseInt(document.getElementById('editCategorySelect').value, 10);
+    var manufacturerName = document.getElementById('editManufacturerName').value;
+    var manufacturerCountry = document.getElementById('editManufacturerCountry').value;
+    var onlineOrderAvailability = document.getElementById('editOnlineOrderAvailability').checked;
+    var installmentOption = document.getElementById('editInstallmentOption').checked;
+    var deviceName = document.getElementById('editDeviceName').value;
+
+    // Проверка на пустоту полей (добавьте свою проверку)
+
+    var data = {
+        id: productId,
+        categoryId: categoryId,
+        manufacturerName: manufacturerName,
+        manufacturerCountry: manufacturerCountry,
+        onlineOrderAvailability: onlineOrderAvailability,
+        installmentOption: installmentOption,
+        name: deviceName
+    };
+
+    // Пробуем получить productId из аргумента функции
+    var apiUrl = productId ? '/api/updateProduct/' + productId : '/api/saveProduct';
+
+    // Выводим данные в консоль перед отправкой запроса
+    console.log('Sending data to server:', data);
+
+    fetch(apiUrl, {
+        method: productId ? 'PUT' : 'POST', // Используйте PUT для обновления и POST для создания
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+    .then(response => {
+        if (response.ok) {
+            // Закрываем модальное окно добавления/редактирования
+            $('#editProductModal').modal('hide');
+        } else {
+            alert('Failed to save edited product. Please try again.');
+        }
+        return response.text();
+    })
+    .then(content => {
+        console.log('Response content:', content);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+
+
+
+
 function deleteProduct(productId) {
     $.ajax({
         url: '/api/deleteProduct/' + productId,
@@ -173,10 +250,6 @@ function deleteProduct(productId) {
         }
     });
 }
-
-
-
-
     function searchProducts() {
         var searchQuery = $('#searchQuery').val();
         filterProducts(currentCategoryId, searchQuery);
@@ -256,8 +329,6 @@ function deleteProduct(productId) {
             console.error('Error:', error);
         });
     }
-
-
 </script>
 
 <!-- Модальное окно для добавления устройства -->
@@ -318,6 +389,64 @@ function deleteProduct(productId) {
         </div>
     </div>
 </div>
+
+<!-- Модальное окно редактирования -->
+<div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Форма с параметрами -->
+                <form>
+                    <div class="mb-3">
+                        <label for="editCategorySelect" class="form-label">Category</label>
+                        <input type="text" class="form-control" id="editCategorySelect" name="categoryId" readonly>
+                            <!-- Опции категорий здесь -->
+                    </div>
+
+
+                    <!-- Остальные поля -->
+                    <div class="mb-3">
+                        <label for="editManufacturerName" class="form-label">Manufacturer Name</label>
+                        <input type="text" class="form-control" id="editManufacturerName" name="manufacturerName">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editManufacturerCountry" class="form-label">Manufacturer Country</label>
+                        <input type="text" class="form-control" id="editManufacturerCountry" name="manufacturerCountry">
+                    </div>
+                    <input type="hidden" id="hiddenProductId" name="hiddenProductId">
+
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="editOnlineOrderAvailability"
+                               name="onlineOrderAvailability">
+                        <label class="form-check-label" for="editOnlineOrderAvailability">Online Order Availability</label>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="editInstallmentOption" name="installmentOption">
+                        <label class="form-check-label" for="editInstallmentOption">Installment Option</label>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editDeviceName" class="form-label">Device Name</label>
+                        <input type="text" class="form-control" id="editDeviceName" name="name">
+                    </div>
+
+                    <button type="button" class="btn btn-primary" onclick="EditedProduct()" data-product-id="your_product_id">Save</button>
+
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         crossorigin="anonymous"></script>

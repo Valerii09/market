@@ -6,6 +6,7 @@ import com.example.market.repository.ProductRepository;
 import com.example.market.service.AvailableModelService;
 import com.example.market.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -13,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class ProductController {
@@ -145,6 +147,48 @@ public class ProductController {
                     .body("{\"error\":\"Error deleting product\"}");
         }
     }
+
+    @PutMapping("/api/updateProduct/{productId}")
+    @ResponseBody
+    public ResponseEntity<String> updateProduct(@PathVariable Long productId, @RequestBody Product updatedProduct) {
+        try {
+            // Получаем существующий продукт из репозитория
+            Product existingProduct = productRepository.findById(productId)
+                    .orElseThrow(() -> new ChangeSetPersister.NotFoundException());
+
+            // Обновляем данные существующего продукта
+            existingProduct.setCategory(updatedProduct.getCategory());
+            existingProduct.setManufacturerName(updatedProduct.getManufacturerName());
+            existingProduct.setManufacturerCountry(updatedProduct.getManufacturerCountry());
+            existingProduct.setOnlineOrderAvailability(updatedProduct.getOnlineOrderAvailability());
+            existingProduct.setInstallmentOption(updatedProduct.getInstallmentOption());
+            existingProduct.setName(updatedProduct.getName());
+
+            // Сохраняем обновленный продукт в репозитории
+            productRepository.save(existingProduct);
+
+            return ResponseEntity.ok("Product updated successfully");
+        } catch (ChangeSetPersister.NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    @GetMapping("/api/getProductById/{productId}")
+    public ResponseEntity<Product> getProductById(@PathVariable Long productId) {
+        System.out.println("Received request to get product by id: " + productId);
+
+        Optional<Product> productOptional = productRepository.findById(productId);
+
+        if (productOptional.isPresent()) {
+            Product product = productOptional.get();
+            return new ResponseEntity<>(product, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+
 
 }
 
