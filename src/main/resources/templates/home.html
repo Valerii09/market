@@ -121,11 +121,10 @@
                 var product = data[i];
                 var row = '<tr>';
                 row += '<td>';
-                row += '<button class="btn btn-danger delete-btn" data-product-id="' + product.id + '">Delete</button>';
-
-                // Добавляем атрибут data-product для кнопки "Edit" с данными продукта
+                row += '<button class="btn btn-danger delete-btn" style="margin-right: 5px;" data-product-id="' + product.id + '">Delete</button>';
                 row += '<button class="btn btn-primary edit-btn" data-toggle="modal" data-target="#editProductModal" data-product-id="' + product.id + '" data-product=\'{"id":' + product.id + ',"categoryId":' + product.categoryId + ',"manufacturerName":"' + product.manufacturerName + '","manufacturerCountry":"' + product.manufacturerCountry + '","onlineOrderAvailability":' + product.onlineOrderAvailability + ',"installmentOption":' + product.installmentOption + ',"name":"' + product.name + '"}\' >Edit</button>';
                 row += '</td>';
+
                 row += '<td>' + product.name + '</td>';
                 row += '<td>' + product.manufacturerCountry + '</td>';
                 row += '<td>' + product.manufacturerName + '</td>';
@@ -177,7 +176,6 @@
 function EditedProduct() {
     // Считываем productId из скрытого поля
     var productId = $('#hiddenProductId').val();
-
     console.log('Received productId:', productId);
 
     // Получаем значения полей формы аналогично saveProduct
@@ -188,7 +186,11 @@ function EditedProduct() {
     var installmentOption = document.getElementById('editInstallmentOption').checked;
     var deviceName = document.getElementById('editDeviceName').value;
 
-    // Проверка на пустоту полей (добавьте свою проверку)
+    // Проверка на пустоту полей
+    if (!manufacturerName || !manufacturerCountry || !deviceName) {
+        alert('Please fill in all required fields (Manufacturer Name, Manufacturer Country, Device Name).');
+        return; // Прекращаем выполнение функции, не отправляем запрос на сервер
+    }
 
     var data = {
         id: productId,
@@ -207,7 +209,7 @@ function EditedProduct() {
     console.log('Sending data to server:', data);
 
     fetch(apiUrl, {
-        method: productId ? 'PUT' : 'POST', // Используйте PUT для обновления и POST для создания
+        method: productId ? 'PUT' : 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
@@ -229,7 +231,6 @@ function EditedProduct() {
         console.error('Error:', error);
     });
 }
-
 
 
 
