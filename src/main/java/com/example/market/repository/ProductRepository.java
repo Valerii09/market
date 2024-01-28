@@ -9,7 +9,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
-
     @Modifying
     @Query("UPDATE Product p SET p.categoryId = :categoryId, p.manufacturerName = :manufacturerName, " +
             "p.manufacturerCountry = :manufacturerCountry, p.onlineOrderAvailability = :onlineOrderAvailability, " +
@@ -23,7 +22,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                            @Param("name") String name);
 
     List<Product> findByCategoryId(Long categoryId);
-    List<Product> findByCategoryIdAndNameContaining(Long categoryId, String searchQuery);
-    List<Product> findByNameContaining(String searchQuery);
+    @Query("SELECT p FROM Product p WHERE LOWER(p.name) = LOWER(:name) AND p.categoryId = :categoryId")
+    List<Product> findByCategoryIdAndNameContaining( Long categoryId, @Param("name") String name);
+
+    @Query("SELECT p FROM Product p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :searchQuery, '%'))")
+    List<Product> findByNameContaining(@Param("searchQuery") String searchQuery);
 
 }

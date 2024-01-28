@@ -19,10 +19,12 @@ import java.util.Optional;
 @Controller
 public class ProductController {
 
+    // Автоматическое внедрение репозитория и сервиса
     @Autowired
     private ProductRepository productRepository;
 
     private final ProductService productService;
+
     @Autowired
     public ProductController(ProductService productService) {
         this.productService = productService;
@@ -31,75 +33,63 @@ public class ProductController {
     @Autowired
     private AvailableModelService availableModelService;
 
+    // Обработка GET-запроса для отображения всех продуктов
     @GetMapping("/home")
     public String getAllProducts(@RequestParam(required = false) Long categoryId, Model model) {
         List<Product> productList;
-
+        // (получение и отображение продуктов)
         if (categoryId != null) {
-            // Если categoryId задан, загрузить только продукты для выбранной категории
             productList = productRepository.findByCategoryId(categoryId);
         } else {
-            // В противном случае загрузить все продукты
             productList = productRepository.findAll();
         }
-
         for (Product product : productList) {
             List<AvailableModel> availableModels = availableModelService.getAvailableModelsByProductId(product.getId());
             product.setAvailableModels(availableModels);
         }
-
         System.out.println("Number of products: " + productList.size());
         model.addAttribute("products", productList);
         return "home";
     }
 
+    // Обработка POST-запроса для сохранения нового продукта
     @PostMapping("/api/saveProduct")
     @ResponseBody
     public ResponseEntity<String> saveProduct(@RequestBody Product product) {
         System.out.println("Received product data: " + product);
-
-        // Пример сохранения продукта в репозитории
         productRepository.save(product);
-
-        // Пример получения доступных моделей для продукта
         List<AvailableModel> availableModels = product.getAvailableModels();
         if (availableModels != null) {
             for (AvailableModel availableModel : availableModels) {
                 availableModel.setProduct(product);
             }
         }
-
-        // Возвращаем JSON-ответ с идентификатором сохраненного продукта и идентификатором категории
         return ResponseEntity.ok("{\"productId\":" + product.getId() + ", \"categoryId\":" + product.getCategory() + "}");
     }
 
+    // Обработка GET-запроса для фильтрации продуктов по категории
     @GetMapping("/filterProducts")
     @ResponseBody
     public ResponseEntity<List<Product>> filterProductsByCategory(@RequestParam(required = false) Long categoryId) {
         try {
             List<Product> products;
             if (categoryId != null && categoryId != -1) {
-                // Если categoryId задан и не равен -1, фильтруем по категории
                 products = productService.getProductsByCategoryId(categoryId);
             } else {
-                // Если categoryId не задан или равен -1, получаем все продукты
                 products = productService.getAllProducts();
             }
             return ResponseEntity.ok(products);
         } catch (Exception e) {
-            // Обработка ошибок, если необходимо
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
 
+    // Обработка GET-запроса для фильтрации продуктов по категории и поисковому запросу
     @GetMapping("/filterProductsByName")
     @ResponseBody
-    public ResponseEntity<List<Product>> filterProductsByName(
-            @RequestParam(required = false) Long categoryId,
-            @RequestParam(required = false) String searchQuery
-    ) {
+    public ResponseEntity<List<Product>> filterProductsByName(@RequestParam(required = false) Long categoryId, @RequestParam(required = false) String searchQuery) {
         try {
             List<Product> products;
 
@@ -131,6 +121,7 @@ public class ProductController {
         }
     }
 
+    // Обработка DELETE-запроса для удаления продукта по ID
     @DeleteMapping("/api/deleteProduct/{productId}")
     @ResponseBody
     public ResponseEntity<String> deleteProduct(@PathVariable Long productId) {
@@ -143,18 +134,17 @@ public class ProductController {
         } catch (Exception e) {
             // Обработка ошибок, если необходимо
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("{\"error\":\"Error deleting product\"}");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\":\"Error deleting product\"}");
         }
     }
 
+    // Обработка PUT-запроса для обновления существующего продукта
     @PutMapping("/api/updateProduct/{productId}")
     @ResponseBody
     public ResponseEntity<String> updateProduct(@PathVariable Long productId, @RequestBody Product updatedProduct) {
         try {
             // Получаем существующий продукт из репозитория
-            Product existingProduct = productRepository.findById(productId)
-                    .orElseThrow(() -> new ChangeSetPersister.NotFoundException());
+            Product existingProduct = productRepository.findById(productId).orElseThrow(() -> new ChangeSetPersister.NotFoundException());
 
             // Обновляем данные существующего продукта
             existingProduct.setCategory(updatedProduct.getCategory());
@@ -174,6 +164,8 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    // Обработка GET-запроса для получения продукта по ID
     @GetMapping("/api/getProductById/{productId}")
     public ResponseEntity<Product> getProductById(@PathVariable Long productId) {
         System.out.println("Received request to get product by id: " + productId);
@@ -187,9 +179,6 @@ public class ProductController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
-
-
 }
 
 

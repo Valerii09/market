@@ -8,7 +8,6 @@ import java.util.Set;
 @Entity
 @Table(name = "category")
 public class Category {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,6 +17,4 @@ public class Category {
 
     @OneToMany(mappedBy = "categoryId")
     private Set<Product> products;
-
-    // Геттеры, сеттеры и другие методы
 }

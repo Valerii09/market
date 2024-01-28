@@ -18,12 +18,10 @@ public class ProductService {
     }
 
     public void saveProduct(Product product) {
-
         productRepository.save(product);
     }
 
     public List<Product> getProductsByCategoryId(Long categoryId) {
-
         return productRepository.findByCategoryId(categoryId);
     }
 
@@ -37,11 +35,9 @@ public class ProductService {
     }
 
     public List<Product> searchProductsByName(String searchQuery) {
-        // Реализуйте метод для поиска продуктов по имени
         return productRepository.findByNameContaining(searchQuery);
     }
     public List<Product> searchProductsByCategoryIdAndName(Long categoryId, String searchQuery) {
-        // Реализуйте метод для поиска продуктов по идентификатору категории и имени
         return productRepository.findByCategoryIdAndNameContaining(categoryId, searchQuery);
     }
 

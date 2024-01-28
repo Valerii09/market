@@ -11,11 +11,10 @@ import java.util.List;
 public class AvailableModelService {
 
     @Autowired
-    private AvailableModelRepository availableModelRepository; // Замените на ваш репозиторий
+    private AvailableModelRepository availableModelRepository;
 
     public List<AvailableModel> getAvailableModelsByProductId(Long productId) {
         return availableModelRepository.findByProductId(productId);
     }
 
-    // Другие методы, если необходимо
 }

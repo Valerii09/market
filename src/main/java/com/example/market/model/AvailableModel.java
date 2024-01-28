@@ -93,8 +93,4 @@ public class AvailableModel {
     public void setAvailability(Boolean availability) {
         this.availability = availability;
     }
-
-    // Другие геттеры и сеттеры для остальных полей
-
-    // Вы также можете добавить equals, hashCode и toString по необходимости
 }

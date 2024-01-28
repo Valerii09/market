@@ -10,11 +10,9 @@ import java.util.List;
 @Entity
 @Table(name = "product")
 public class Product {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     @JsonManagedReference
@@ -99,5 +97,4 @@ public class Product {
     public void setCategory(Long category) {
         this.categoryId = category;
     }
-
 }
