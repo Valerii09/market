@@ -129,6 +129,23 @@ public class ProductController {
         }
     }
 
+    @DeleteMapping("/api/deleteProduct/{productId}")
+    @ResponseBody
+    public ResponseEntity<String> deleteProduct(@PathVariable Long productId) {
+        try {
+            // Пример удаления продукта из репозитория
+            productRepository.deleteById(productId);
+
+            // Возвращаем успешный JSON-ответ
+            return ResponseEntity.ok("{\"message\":\"Product deleted successfully\"}");
+        } catch (Exception e) {
+            // Обработка ошибок, если необходимо
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"error\":\"Error deleting product\"}");
+        }
+    }
+
 }
 
 

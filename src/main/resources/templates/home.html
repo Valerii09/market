@@ -11,93 +11,6 @@
 <!-- Подключение библиотеки jQuery (если ещё не подключена) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<script>
-    $(document).ready(function () {
-        // Загружаем все продукты при открытии страницы
-        filterProducts(-1, '');
-
-        // Переменная для хранения текущей выбранной категории
-        var currentCategoryId = -1;
-
-        // Обработчик события для каждой категории
-        $('.dropdown-item').click(function (event) {
-            event.preventDefault();
-            var categoryId = $(this).data('category-id');
-            currentCategoryId = categoryId; // Сохраняем текущую категорию
-            filterProducts(categoryId, '');
-        });
-
-        // Добавляем обработчик для "All categories"
-        $('#allCategories').click(function (event) {
-            event.preventDefault();
-            currentCategoryId = -1; // Сбрасываем текущую категорию
-            filterProducts(-1, '');
-        });
-
-        // Обработчик ввода в поле поиска
-        $('#searchQuery').on('input', function () {
-            var searchQuery = $(this).val();
-            filterProducts(currentCategoryId, searchQuery);
-        });
-
-        // Добавляем обработчик для кнопки поиска (если у вас есть такая кнопка)
-        $('#searchButton').click(function (event) {
-            event.preventDefault();
-            searchProducts();
-        });
-    });
-
-    function filterProducts(categoryId, searchQuery) {
-        $.ajax({
-            url: '/filterProductsByName',
-            type: 'GET',
-            data: {
-                categoryId: categoryId,
-                searchQuery: searchQuery
-            },
-            success: function (data) {
-                // Очищаем текущий HTML-контент таблицы
-                $('tbody').empty();
-
-                // Перебираем полученные данные и обновляем HTML-контент таблицы
-                for (var i = 0; i < data.length; i++) {
-                    var product = data[i];
-                    var row = '<tr>';
-                    row += '<td>' + product.name + '</td>';
-                    row += '<td>' + product.manufacturerCountry + '</td>';
-                    row += '<td>' + product.manufacturerName + '</td>';
-                    row += '<td>';
-
-                    // Добавляем модели в одну ячейку
-                    if (product.availableModels.length > 0) {
-                        row += '<ul>';
-                        for (var j = 0; j < product.availableModels.length; j++) {
-                            row += '<li>' + product.availableModels[j].name + '</li>';
-                        }
-                        row += '</ul>';
-                    } else {
-                        row += 'No models available';
-                    }
-
-                    row += '</td></tr>';
-
-                    // Добавляем строку в таблицу
-                    $('tbody').append(row);
-                }
-            },
-            error: function (xhr, status, error) {
-                // Обработка ошибки
-                console.error('Error while filtering products:', status, error);
-            }
-        });
-    }
-
-    function searchProducts() {
-        var searchQuery = $('#searchQuery').val();
-        filterProducts(currentCategoryId, searchQuery);
-    }
-</script>
-
 
 <header class="p-3 mb-3 border-bottom">
     <div class="container">
@@ -141,6 +54,18 @@
 </header>
 <script>
     $(document).ready(function () {
+     // Добавляем обработчик для кнопки удаления
+        $('body').on('click', '.delete-btn', function () {
+            var productId = $(this).data('product-id');
+            deleteProduct(productId);
+        });
+
+        // Добавляем обработчик для кнопки редактирования
+        $('body').on('click', '.edit-btn', function () {
+            var productId = $(this).data('product-id');
+            // Реализуйте логику редактирования, например, открыв модальное окно с формой редактирования
+        });
+
         // Загружаем все продукты при открытии страницы
         filterProducts(-1, '');
 
@@ -200,6 +125,10 @@
                 for (var i = 0; i < data.length; i++) {
                     var product = data[i];
                     var row = '<tr>';
+                     row += '<td>';
+            row += '<button class="btn btn-danger delete-btn" data-product-id="' + product.id + '">Delete</button>';
+            row += '<button class="btn btn-primary edit-btn" data-product-id="' + product.id + '">Edit</button>';
+            row += '</td>';
                     row += '<td>' + product.name + '</td>';
                     row += '<td>' + product.manufacturerCountry + '</td>';
                     row += '<td>' + product.manufacturerName + '</td>';
@@ -228,6 +157,25 @@
             }
         });
     }
+function deleteProduct(productId) {
+    $.ajax({
+        url: '/api/deleteProduct/' + productId,
+        type: 'DELETE',
+        success: function (data) {
+            // Обработка успешного удаления, если необходимо
+            console.log('Product deleted successfully');
+            // Вызываем функцию для обновления продуктов после удаления
+            filterProducts(-1, $('#searchQuery').val());
+        },
+        error: function (xhr, status, error) {
+            // Обработка ошибки
+            console.error('Error while deleting product:', status, error);
+        }
+    });
+}
+
+
+
 
     function searchProducts() {
         var searchQuery = $('#searchQuery').val();
@@ -240,6 +188,7 @@
     <table class="table">
         <thead>
         <tr>
+            <th></th>
             <th>Name</th>
             <th>Manufacturer Country</th>
             <th>Manufacturer Name</th>
@@ -249,25 +198,6 @@
         <tbody>
         <!-- Цикл для каждого продукта -->
         <tr th:each="product : ${products}" th:if="${product.categoryId == selectedCategoryId}">
-            <td th:text="${product.name}"></td>
-            <td th:text="${product.manufacturerCountry}"></td>
-            <td th:text="${product.manufacturerName}"></td>
-            <td>
-                <!-- Вложенная таблица для моделей -->
-                <table>
-                    <thead>
-                    <tr>
-                        <th>Model Name</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <!-- Цикл для каждой доступной модели -->
-                    <tr th:each="model : ${product.availableModels}">
-                        <td th:text="${model.name}"></td>
-                    </tr>
-                    </tbody>
-                </table>
-            </td>
         </tr>
         </tbody>
     </table>
